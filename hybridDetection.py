@@ -334,20 +334,3 @@ for i in range(len(result)):
 # Confusion Matrix
 print(confusion_matrix(normal_y, result))
 print(classification_report(normal_y, result, target_names=['Attack', 'Normal']))
-
-# ROC curve
-normal_y = encoder.fit_transform(normal_y)
-result_lr = encoder.fit_transform(result_lr)
-result_dt = encoder.fit_transform(result_dt)
-result_rf = encoder.fit_transform(result_rf)
-result_gb = encoder.fit_transform(result_gb)
-
-plt.plot([0, 1], [0, 1], linestyle='--')
-rocvis(normal_y, result_lr,"Logistic Regression")
-rocvis(normal_y, result_dt,"Decision Tree")
-rocvis(normal_y, result_rf,"Random Forest")
-rocvis(normal_y, result_gb,"Gradient Boosting")
-
-plt.legend(fontsize = 18)
-plt.title("Models Roc Curve" , fontsize= 25)
-plt.show()
