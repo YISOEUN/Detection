@@ -326,6 +326,7 @@ print("Anomaly detection best score: ", max_score)
 result = list(best_model.predict(normal_X))
 for i in range(len(result)):
     if result[i] != 'Normal':
+        #check
         print('index', i, '---->', result[i])
         print(normal_X.iloc[i])
 
