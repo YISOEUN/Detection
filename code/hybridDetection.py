@@ -32,6 +32,7 @@ def rocvis(true, prob, label):
         from sklearn.preprocessing import LabelEncoder
         le = LabelEncoder()
         true = le.fit_transform(true)
+        prob = le.fit_transform(prob)
     else:
         pass
     fpr, tpr, thresholds = roc_curve(true, prob)
@@ -55,12 +56,15 @@ def hybridDetect(test_file) :
     attacks = {'Normal':0,'Back':0, 'FTPWrite':0, 'Neptune':0, 'PortSweep':0,'Satan':0, 'BufferOverflow':0,
                'GuessPassword':0, 'NMap':0, 'Rootkit':0, 'Smurf':0}
 
+    misuse_result = ""
+
     # ------------------------------------------------------
     # anomaly detection
     anomaly_file = './preprocessed_data/Dataset_Anomaly_AttributeSelection.csv'
     anomaly_df = pd.read_csv(anomaly_file)
     anomaly_df = anomaly_df.drop('Unnamed: 0', axis=1)
 
+    anomaly_result = ""
 
     print(anomaly_df)
 
@@ -93,18 +97,18 @@ def hybridDetect(test_file) :
     # -------------------------------------------------------------------------------------------------------------
     # Parameter sets for each Classification models
     logistic_params = {
-        # 'C': [0.1, 1.0, 10.0],
-        # 'solver': ['liblinear', 'lbfgs', 'sag'],
+        'C': [0.1, 1.0, 10.0],
+        'solver': ['liblinear', 'lbfgs', 'sag'],
         'max_iter': [50, 100, 200]
     }
     decisionTree_params = {
-        # 'max_depth': [None, 6, 8, 10, 12, 16, 20, 24],
-        # 'min_samples_split': [2, 20, 50, 100, 200],
+        'max_depth': [None, 6, 8, 10, 12, 16, 20, 24],
+        'min_samples_split': [2, 20, 50, 100, 200],
         'criterion': ['entropy', 'gini']
     }
     randomForest_params = {
-        # 'n_estimators': [200, 500],
-        # 'max_features': ['auto', 'sqrt', 'log2'],
+        'n_estimators': [200, 500],
+        'max_features': ['auto', 'sqrt', 'log2'],
         'max_depth': [4, 5, 6, 7, 8],
         'criterion': ['gini', 'entropy']
     }
@@ -200,39 +204,60 @@ def hybridDetect(test_file) :
     rocvis(test_y, prob_rf[:, 1], "RandomForest")
 
     # Gradient Boosting
-    ##gcv_gradientBoosting = GridSearchCV(gradientBoosting, param_grid=gradient_params, scoring='accuracy', cv=cv, verbose=1)
-    ##gcv_gradientBoosting.fit(X_scaled, misuse_y)
-    ##print("---------------------------------------------------------------")
-    ##print("Gradient Boosting")
-    ##print('final params', gcv_gradientBoosting.best_params_)  # print best parameter value
-    ##print('best score', gcv_gradientBoosting.best_score_)  # best score
-    ##gradientBoosting_best = gcv_gradientBoosting.best_estimator_
-    ##gcv_gradientBoosting_score = gcv_gradientBoosting.best_score_
+    gcv_gradientBoosting = GridSearchCV(gradientBoosting, param_grid=gradient_params, scoring='accuracy', cv=cv, verbose=1)
+    gcv_gradientBoosting.fit(X_scaled, misuse_y)
+    print("---------------------------------------------------------------")
+    print("Gradient Boosting")
+    print('final params', gcv_gradientBoosting.best_params_)  # print best parameter value
+    print('best score', gcv_gradientBoosting.best_score_)  # best score
+    gradientBoosting_best = gcv_gradientBoosting.best_estimator_
+    gcv_gradientBoosting_score = gcv_gradientBoosting.best_score_
 
-    ##index = 0
-    ##result_gb = list(gradientBoosting_best.predict(test_X))
-    ##for i in range(len(result_gb)):
-    ##    if result_gb[i] != 'Normal':
-    ##        result_gb[i] = 'Attack'
+    index = 0
+    result_gb = list(gradientBoosting_best.predict(test_X))
+    for i in range(len(result_gb)):
+       if result_gb[i] != 'Normal':
+           result_gb[i] = 'Attack'
 
     # Confusion Matrix & ROC curve
-    ##print(confusion_matrix(test_y, result_gb))
-    ##print(classification_report(test_y, result_gb, target_names=['Attack', 'Normal']))
+    print(confusion_matrix(test_y, result_gb))
+    print(classification_report(test_y, result_gb, target_names=['Attack', 'Normal']))
 
-    # prob_gb = gradientBoosting_best.predict_proba(test_X)
-    # rocvis(test_y, prob_gb[:, 1], "GradientBoost")
+    prob_gb = gradientBoosting_best.predict_proba(test_X)
+    rocvis(test_y, prob_gb[:, 1], "GradientBoost")
 
-    # Find best model & score
-    score = [gcv_decisionTree_score, gcv_randomForest_score]
-    models = [decisionTree_best, randomForest_best]
-    ##score = [gcv_decisionTree_score, gcv_randomForest_score, gcv_gradientBoosting_score]
-    ##models = [decisionTree_best, randomForest_best, gradientBoosting_best]
+    # best model & score
+    # score = [gcv_decisionTree_score, gcv_randomForest_score]
+    # models = [decisionTree_best, randomForest_best]
+    # model_names = ["Decision Tree", "Random Forest"]
+    # model_results = [result_dt, result_rf]
+    model_names = ["Decision Tree", "Random Forest","Gradient Boosting"]
+    score = [gcv_decisionTree_score, gcv_randomForest_score, gcv_gradientBoosting_score]
+    models = [decisionTree_best, randomForest_best, gradientBoosting_best]
+    model_results = [result_lr, result_dt, result_rf, result_gb]
+
     max_score = gcv_logistic_score
     best_model = logistic_best
+    best_name = "Logistic Regression"
+    best_result = result_lr
+
     for i in range(len(score)):
         if max_score < score[i]:
             max_score = score[i]
             best_model = models[i]
+            best_name = model_names[i]
+            best_result = model_results[i]
+
+    print("Anomaly detection best score: ", max_score)
+
+    f = open('misuse_model.txt', 'w')
+
+    result = "Best model  ---------  " + best_name + "\n" + 'best score' + str(
+        max_score) +"\n"+ str(confusion_matrix(test_y, best_result)) +"\n"+ str(
+        classification_report(test_y, best_result, target_names=['Attack',
+                                                                   'Normal'])) + '\n----------------------------------------------------------------------------------------------------\n'
+    f.write(result)
+
 
     print("Misuse detection best score: ", max_score)
 
@@ -241,6 +266,7 @@ def hybridDetect(test_file) :
     normal_y = []
     index = 0
     result = list(best_model.predict(test_X))
+    f =  open('misuse.txt', 'w')
     for i in range(len(result)):
         if result[i] == 'Normal':
             attacks['Normal'] = attacks.get('Normal') + 1
@@ -249,16 +275,17 @@ def hybridDetect(test_file) :
             index = index + 1
         else:
             # check
-            print('index', i, '---->', result[i])
-
-            print()
+            # print('index', i, '---->', result[i])
+            misuse_result = 'index' + str(i) + '---->' + result[i] + "\n"
+            f.write(misuse_result)
             for j in attacks.keys():
-                if(j == result[i]):
+                if (j == result[i]):
                     # check
-                    print(result[i], j,sep='       ')
+                    # print(result[i], j, sep='       ')
                     attacks[j] = attacks.get(j) + 1
             result[i] = 'Attack'
-
+    print(misuse_result)
+    f.close()
     # check
     for j in attacks.keys():
         print(j, ':', attacks[j])
@@ -283,8 +310,6 @@ def hybridDetect(test_file) :
     plt.pie(ratio, labels=labels, shadow=True, startangle=90)
     plt.savefig('./misuse.png')
     # plt.show()
-
-
 
     # Confusion Matrix & ROC curve
     print(confusion_matrix(test_y, result))
@@ -324,6 +349,8 @@ def hybridDetect(test_file) :
     print(confusion_matrix(normal_y, result_lr))
     print(classification_report(normal_y, result_lr, target_names=['Attack', 'Normal']))
 
+
+
     prob_lr = logistic_best.predict_proba(test_X)
     rocvis(test_y, prob_lr[:, 1], "Logistic")
 
@@ -362,53 +389,78 @@ def hybridDetect(test_file) :
     print(confusion_matrix(normal_y, result_rf))
     print(classification_report(normal_y, result_rf, target_names=['Attack', 'Normal']))
 
+
     prob_rf = randomForest_best.predict_proba(test_X)
     rocvis(test_y, prob_rf[:, 1], "RandomForest")
 
-    ### Gradient Boosting
-    ##gcv_gradientBoosting = GridSearchCV(gradientBoosting, param_grid=gradient_params, scoring='accuracy', cv=cv, verbose=1)
-    ##gcv_gradientBoosting.fit(X_scaled, anomaly_y)
-    ##print("---------------------------------------------------------------")
-    ##print("Gradient Boosting")
-    ##print('final params', gcv_gradientBoosting.best_params_)  # print best parameter value
-    ##print('best score', gcv_gradientBoosting.best_score_)  # best score
-    ##gradientBoosting_best = gcv_gradientBoosting.best_estimator_
-    ##gcv_gradientBoosting_score = gcv_gradientBoosting.best_score_
-    ##
-    ##index = 0
-    ##result_gb = list(gradientBoosting_best.predict(normal_X))
-    ### Confusion Matrix & ROC curve
-    ##print(confusion_matrix(normal_y, result_gb))
-    ##print(classification_report(normal_y, result_gb, target_names=['Attack', 'Normal']))
+    # Gradient Boosting
+    gcv_gradientBoosting = GridSearchCV(gradientBoosting, param_grid=gradient_params, scoring='accuracy', cv=cv, verbose=1)
+    gcv_gradientBoosting.fit(X_scaled, anomaly_y)
+    print("---------------------------------------------------------------")
+    print("Gradient Boosting")
+    print('final params', gcv_gradientBoosting.best_params_)  # print best parameter value
+    print('best score', gcv_gradientBoosting.best_score_)  # best score
+    gradientBoosting_best = gcv_gradientBoosting.best_estimator_
+    gcv_gradientBoosting_score = gcv_gradientBoosting.best_score_
 
-    # prob_gb = gradientBoosting_best.predict_proba(test_X)
-    # rocvis(test_y, prob_gb[:, 1], "GradientBoost")
+    index = 0
+    result_gb = list(gradientBoosting_best.predict(normal_X))
+    # Confusion Matrix & ROC curve
+    print(confusion_matrix(normal_y, result_gb))
+    print(classification_report(normal_y, result_gb, target_names=['Attack', 'Normal']))
+
+
+    prob_gb = gradientBoosting_best.predict_proba(test_X)
+    rocvis(test_y, prob_gb[:, 1], "GradientBoost")
 
     # best model & score
-    score = [gcv_decisionTree_score, gcv_randomForest_score]
-    models = [decisionTree_best, randomForest_best]
-    # score = [gcv_decisionTree_score, gcv_randomForest_score, gcv_gradientBoosting_score]
-    # models = [decisionTree_best, randomForest_best, gradientBoosting_best]
+    # score = [gcv_decisionTree_score, gcv_randomForest_score]
+    # models = [decisionTree_best, randomForest_best]
+    # model_names = ["Decision Tree", "Random Forest"]
+    # model_results = [result_dt, result_rf]
+    model_names = ["Decision Tree", "Random Forest","Gradient Boosting"]
+    score = [gcv_decisionTree_score, gcv_randomForest_score, gcv_gradientBoosting_score]
+    models = [decisionTree_best, randomForest_best, gradientBoosting_best]
+    model_results = [result_lr, result_dt, result_rf, result_gb]
+
     max_score = gcv_logistic_score
     best_model = logistic_best
+    best_name = "Logistic Regression"
+    best_result = result_lr
     for i in range(len(score)):
         if max_score < score[i]:
             max_score = score[i]
             best_model = models[i]
+            best_name = model_names[i]
+            best_result = model_results[i]
 
     print("Anomaly detection best score: ", max_score)
 
+    f = open('anomaly_model.txt', 'w')
+
+    result = "Best model  ---------  " +best_name +  "\n" + 'best score' + str(
+        max_score) +"\n"+ str(confusion_matrix(normal_y, best_result)) +"\n"+ str(
+        classification_report(normal_y, best_result, target_names=['Attack',
+                                                                 'Normal'])) + '\n----------------------------------------------------------------------------------------------------\n'
+    f.write(result)
+
+    f.close()
+
     result = list(best_model.predict(normal_X))
-    for i in range(len(result)):
-        if result[i] != 'Normal':
-            attack_num = attack_num + 1
-            # check
-            print('index', i, '---->', result[i])
-            print(normal_X.iloc[i])
-        else:
-            normal_num = normal_num + 1
-            # check
-            print('normal_index', i, '---->', result[i])
+    with open('anomaly.txt', 'w') as f:
+        for i in range(len(result)):
+            if result[i] != 'Normal':
+                attack_num = attack_num + 1
+                # check
+                # print('index', i, '---->', result[i])
+                anomaly_result = 'index' + str(i) + '---->' + result[i] + '\n'
+                f.write(anomaly_result)
+                # check
+                # print(normal_X.iloc[i])
+            else:
+                normal_num = normal_num + 1
+                # check
+                # print('normal_index', i, '---->', result[i])
 
     print("attack_num : ",attack_num,"normal : ",normal_num)
 
@@ -418,14 +470,14 @@ def hybridDetect(test_file) :
     #         print('index', i, normal_y[i], '---->', result[i])
     # print(normal_X.iloc[i])
 
+    # check
     # Confusion Matrix & ROC curve
     # print(confusion_matrix(normal_y, result))
     # print(classification_report(normal_y, result, target_names=['Attack', 'Normal']))
 
-    # check
+
 
     # Draw ROC curve
-
     plt.plot([0, 1], [0, 1], linestyle='--')
     # axis labels
     plt.xlabel('False Positive Rate')
@@ -444,5 +496,3 @@ def hybridDetect(test_file) :
     # plt.show()
 
     return 0
-
-
