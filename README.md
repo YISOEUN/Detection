@@ -12,6 +12,6 @@
  
 ------------------------
 #### Developer 
-  * Yerin Kim (ggg06224@naver.com)
+  * Yerin Kim (k67065411@gmail.com)
   * Joohyun Kim (kjh99723@gmail.com)
   * Soeun Yi (soun0715@gmail.com)
