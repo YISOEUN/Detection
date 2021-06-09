@@ -9,9 +9,9 @@ Attack detection through Misuse detection and Anomaly detection.
 ## Collaborator
 | Name                 | Email                      |
 | :------------------- | :------------------------- |
-| Yerin Kim            | k67065411@gmail.com        |
-| joohyun Kim          | kjh99723@gmail.com         |
-| Soeun Yi             | soun0715@gmail.com         |
+| Kim Ye-rin(김예린)    | k67065411@gmail.com        |
+| Kim joo-hyun(김주현)  | kjh99723@gmail.com         |
+| Yi So-eun(이소은)     | soun0715@gmail.com         |
  
 ## Experimental Environment
 ### Source
