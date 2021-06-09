@@ -1,6 +1,7 @@
-# Hybrid Detection
-### Graduation project (Department of Software at Gachon University) 
-------------------------
+# Graduation project (Department of Software at Gachon University)
+### Project Title
+Hybrid Detection
+<hr>
 ### Attack detection through Misuse detection and Anomaly detection.
 #### Programming language
   * Python
