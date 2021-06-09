@@ -1,4 +1,5 @@
-# Graduation project (Department of Software at Gachon Univ.)
+# Graduation project(Department of Software at Gachon Univ.)
+
 ## Project Title
 Misuse + Anomaly = Hybrid Detection
 
@@ -18,10 +19,10 @@ Python
 > source : https://github.com/kartik18/Machine-Learning-Project 
 
 ### Used classification Libarary
-Logistic Regression <br>
-Decision Tree <br>
-Random Forest <br>
-Gradient Boosting <br>
+> Logistic Regression <br>
+> Decision Tree <br>
+> Random Forest <br>
+> Gradient Boosting <br>
  
 ## Collaborator
 | Name                 | Email                      |
