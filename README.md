@@ -6,6 +6,13 @@ Misuse + Anomaly = Hybrid Detection
 ## Project Description
 Attack detection through Misuse detection and Anomaly detection.
 
+## Collaborator
+| Name                 | Email                      |
+| :------------------- | :------------------------- |
+| Yerin Kim            | k67065411@gmail.com        |
+| oohyun Kim           | kjh99723@gmail.com         |
+| Soeun Yi             | soun0715@gmail.com         |
+
 ## Programming language
 Python
  
@@ -24,9 +31,6 @@ Python
 > Random Forest <br>
 > Gradient Boosting <br>
  
-## Collaborator
-| Name                 | Email                      |
-| :------------------- | :------------------------- |
-| Yerin Kim            | k67065411@gmail.com        |
-| oohyun Kim           | kjh99723@gmail.com         |
-| Soeun Yi             | soun0715@gmail.com         |
+## Award
+Hanbat University Big Data AI Center 2019 Student Big Data Analysis Competition Excellence Award
+
