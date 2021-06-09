@@ -10,7 +10,7 @@ Attack detection through Misuse detection and Anomaly detection.
 | Name                 | Email                      |
 | :------------------- | :------------------------- |
 | Yerin Kim            | k67065411@gmail.com        |
-| oohyun Kim           | kjh99723@gmail.com         |
+| joohyun Kim          | kjh99723@gmail.com         |
 | Soeun Yi             | soun0715@gmail.com         |
  
 ## Experimental Environment
