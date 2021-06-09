@@ -12,9 +12,6 @@ Attack detection through Misuse detection and Anomaly detection.
 | Yerin Kim            | k67065411@gmail.com        |
 | oohyun Kim           | kjh99723@gmail.com         |
 | Soeun Yi             | soun0715@gmail.com         |
-
-## Programming language
-Python
  
 ## Experimental Environment
 ### Source
@@ -30,6 +27,9 @@ Python
 > Decision Tree <br>
 > Random Forest <br>
 > Gradient Boosting <br>
+ 
+## Our paper
+blahblah
  
 ## Award
 Hanbat University Big Data AI Center 2019 Student Big Data Analysis Competition Excellence Award
