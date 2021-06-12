@@ -29,7 +29,9 @@ Attack detection through Misuse detection and Anomaly detection.
 > Gradient Boosting <br>
  
 ## Our paper
-blahblah
+Anomaly Detection와 Misuse Detection을 활용한 Hybrid Detection <br>
+Hybrid Detection using Anomaly and Misuse Detection 
+> Can see in Document file
  
 ## Award
 Hanbat University Big Data AI Center 2019 Student Big Data Analysis Competition Excellence Award
