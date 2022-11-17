@@ -4,7 +4,7 @@
 Misuse + Anomaly = Hybrid Detection
 
 ## Project Description
-Attack detection through Misuse detection and Anomaly detection.
+Detect attack through Misuse detection and Anomaly detection.
 
 ## Collaborator
 | Name                 | Email                      |Period                      |
